@@ -1,4 +1,7 @@
 import { randomUUID } from "node:crypto";
+
+import { stripMarkdown } from "openclaw/plugin-sdk";
+
 import { resolveMeshtasticAccount } from "./accounts.js";
 import { hexToNodeNum, normalizeMeshtasticMessagingTarget } from "./normalize.js";
 import { getMeshtasticRuntime } from "./runtime.js";
@@ -67,7 +70,8 @@ export async function sendMessageMeshtastic(
     accountId: account.accountId,
   });
   const prepared = runtime.channel.text.convertMarkdownTables(text.trim(), tableMode);
-  if (!prepared.trim()) {
+  const stripped = stripMarkdown(prepared);
+  if (!stripped.trim()) {
     throw new Error("Message must be non-empty for Meshtastic sends");
   }
 
@@ -75,7 +79,7 @@ export async function sendMessageMeshtastic(
 
   if (transport === "mqtt") {
     if (activeMqttSend) {
-      await activeMqttSend(prepared, target, opts.channelName);
+      await activeMqttSend(stripped, target, opts.channelName);
     } else {
       throw new Error("No active MQTT connection. Run 'openclaw gateway start' to connect.");
     }
@@ -83,7 +87,7 @@ export async function sendMessageMeshtastic(
     // Serial or HTTP: use active transport if available.
     if (activeSerialSend) {
       const destination = target.startsWith("!") ? hexToNodeNum(target) : undefined;
-      await activeSerialSend(prepared, destination, opts.channelIndex);
+      await activeSerialSend(stripped, destination, opts.channelIndex);
     } else {
       throw new Error(`No active ${transport} connection. Run 'openclaw gateway start' to connect.`);
     }

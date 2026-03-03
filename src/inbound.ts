@@ -51,6 +51,13 @@ function resolveMeshtasticEffectiveAllowlists(params: {
 // so the firmware doesn't silently truncate them.
 const MESHTASTIC_CHUNK_LIMIT = 200;
 
+/** Channel-level system prompt hint for LoRa-constrained responses. */
+const LORA_SYSTEM_HINT =
+  "You are responding over a LoRa mesh radio (Meshtastic). " +
+  "Each message is limited to ~200 bytes. " +
+  "Keep responses extremely concise — plain text only, no markdown, no emoji, no bullet lists. " +
+  "Use short sentences. Omit filler words. Prioritize the most important information first.";
+
 
 function chunkText(text: string, limit: number): string[] {
   if (text.length <= limit) return [text];
@@ -344,7 +351,7 @@ export async function handleMeshtasticInbound(params: {
     SenderName: message.senderName || undefined,
     SenderId: message.senderNodeId,
     GroupSubject: message.isGroup ? channelLabel : undefined,
-    GroupSystemPrompt: message.isGroup ? groupSystemPrompt : undefined,
+    GroupSystemPrompt: [LORA_SYSTEM_HINT, groupSystemPrompt].filter(Boolean).join("\n\n"),
     Provider: CHANNEL_ID,
     Surface: CHANNEL_ID,
     WasMentioned: message.isGroup ? wasMentioned : undefined,

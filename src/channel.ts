@@ -264,8 +264,8 @@ export const meshtasticPlugin: ChannelPlugin<ResolvedMeshtasticAccount, Meshtast
   },
   outbound: {
     deliveryMode: "direct",
-    chunker: (text, limit) => getMeshtasticRuntime().channel.text.chunkMarkdownText(text, limit),
-    chunkerMode: "markdown",
+    chunker: (text, limit) => getMeshtasticRuntime().channel.text.chunkText(text, limit),
+    chunkerMode: "text",
     textChunkLimit: 200,
     sendText: async ({ to, text, accountId }) => {
       const result = await sendMessageMeshtastic(to, text, {
