@@ -36,7 +36,7 @@
 openclaw plugins install @seeed-studio/meshtastic
 
 # 2. Guided setup — walks you through transport, region, and access policy
-openclaw setup
+openclaw onboard
 
 # 3. Verify
 openclaw channels status --probe
@@ -101,7 +101,7 @@ Fallback: [media/demo.mp4](media/demo.mp4)
 
 ## Setup Wizard
 
-Running `openclaw setup` launches an interactive wizard that walks you through each configuration step. Below is what each step means and how to choose.
+Running `openclaw onboard` launches an interactive wizard that walks you through each configuration step. Below is what each step means and how to choose.
 
 ### 1. Transport
 
@@ -178,7 +178,7 @@ Assigns human-readable display names to your accounts. For example, an account w
 
 ## Configuration
 
-The guided setup (`openclaw setup`) covers everything below. See [Setup Wizard](#setup-wizard) for a step-by-step walkthrough. For manual config, edit with `openclaw config edit`.
+The guided setup (`openclaw onboard`) covers everything below. See [Setup Wizard](#setup-wizard) for a step-by-step walkthrough. For manual config, edit with `openclaw config edit`.
 
 ### Serial (USB)
 

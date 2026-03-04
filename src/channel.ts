@@ -294,7 +294,7 @@ export const meshtasticPlugin: ChannelPlugin<ResolvedMeshtasticAccount, Meshtast
       if (!account.configured) {
         return {
           ok: false,
-          error: "Not configured. Run 'openclaw setup' to configure.",
+          error: "Not configured. Run 'openclaw onboard' to configure.",
           transport: account.transport,
         } as MeshtasticProbe;
       }
@@ -377,7 +377,7 @@ export const meshtasticPlugin: ChannelPlugin<ResolvedMeshtasticAccount, Meshtast
       if (!account.configured) {
         throw new Error(
           `Meshtastic is not configured for account "${account.accountId}". ` +
-            `Run 'openclaw setup' or set channels.meshtastic.transport and connection details in config.`,
+            `Run 'openclaw onboard' or set channels.meshtastic.transport and connection details in config.`,
         );
       }
       const transportDesc =

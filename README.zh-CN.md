@@ -36,7 +36,7 @@
 openclaw plugins install @seeed-studio/meshtastic
 
 # 2. 交互式设置 — 引导完成传输方式、频率区域、访问策略等配置
-openclaw setup
+openclaw onboard
 
 # 3. 验证
 openclaw channels status --probe
@@ -101,7 +101,7 @@ https://github.com/user-attachments/assets/a3e46e9d-cf5a-4743-9830-f671a1998ca0
 
 ## 设置向导
 
-运行 `openclaw setup` 会启动一个交互式向导，逐步引导你完成配置。以下是每一步的含义和选择建议。
+运行 `openclaw onboard` 会启动一个交互式向导，逐步引导你完成配置。以下是每一步的含义和选择建议。
 
 ### 1. 传输方式（Transport）
 
@@ -178,7 +178,7 @@ https://github.com/user-attachments/assets/a3e46e9d-cf5a-4743-9830-f671a1998ca0
 
 ## 配置
 
-交互式设置（`openclaw setup`）涵盖以下所有内容。详细步骤说明参见[设置向导](#设置向导)。如需手动编辑，使用 `openclaw config edit`。
+交互式设置（`openclaw onboard`）涵盖以下所有内容。详细步骤说明参见[设置向导](#设置向导)。如需手动编辑，使用 `openclaw config edit`。
 
 ### Serial（USB 串口）
 

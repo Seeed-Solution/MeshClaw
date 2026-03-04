@@ -59,7 +59,7 @@ export async function monitorMeshtasticProvider(
   if (!account.configured) {
     throw new Error(
       `Meshtastic is not configured for account "${account.accountId}". ` +
-        `Run 'openclaw setup' or set channels.meshtastic.transport and connection details in config.`,
+        `Run 'openclaw onboard' or set channels.meshtastic.transport and connection details in config.`,
     );
   }
 
@@ -247,7 +247,7 @@ async function monitorMqtt(params: {
   const mqttConfig = account.config.mqtt;
 
   if (!mqttConfig?.broker) {
-    throw new Error("MQTT broker not configured. Set channels.meshtastic.mqtt.broker or run 'openclaw setup'.");
+    throw new Error("MQTT broker not configured. Set channels.meshtastic.mqtt.broker or run 'openclaw onboard'.");
   }
 
   let mqttClient: MeshtasticMqttClient | null = null;
