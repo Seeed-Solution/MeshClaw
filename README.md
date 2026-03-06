@@ -24,7 +24,7 @@
 - [How It Works](#how-it-works)
 - [Recommended Hardware](#recommended-hardware)
 - [Features](#features)
-- [Capabilities & Roadmap](#Capabilities & Roadmap)
+- [Capabilities & Roadmap](#Capabilities-&-Roadmap)
 - [Demo](#demo)
 - [Quick Start](#quick-start)
 - [Setup Wizard](#setup-wizard)
