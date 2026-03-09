@@ -12,5 +12,26 @@
     "label": "日本語",
     "target": "README.ja.md",
     "toc_pattern": "目次|Table of Contents"
+  },
+  {
+    "code": "fr",
+    "name": "French",
+    "label": "Français",
+    "target": "README.fr.md",
+    "toc_pattern": "Sommaire|Table des matières|Table of Contents"
+  },
+  {
+    "code": "pt",
+    "name": "Portuguese",
+    "label": "Português",
+    "target": "README.pt.md",
+    "toc_pattern": "Sumário|Índice|Table of Contents"
+  },
+  {
+    "code": "es",
+    "name": "Spanish",
+    "label": "Español",
+    "target": "README.es.md",
+    "toc_pattern": "Índice|Tabla de contenidos|Table of Contents"
   }
 ]
