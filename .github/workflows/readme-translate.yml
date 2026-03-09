@@ -1,0 +1,71 @@
+name: Translate README
+
+on:
+  push:
+    branches:
+      - "**"
+    paths:
+      - "README.md"
+      - ".github/scripts/translate_readme.py"
+      - ".github/translate/**"
+      - ".github/workflows/readme-translate.yml"
+  workflow_dispatch:
+
+concurrency:
+  group: translate-readme-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: write
+
+env:
+  LLM_API_KEY: ${{ secrets.LLM_API_KEY }}
+  LLM_BASE_URL: ${{ vars.LLM_BASE_URL || 'https://api.kimi.com/coding/v1/chat/completions' }}
+  LLM_MODEL: ${{ vars.LLM_MODEL || 'kimi-for-coding' }}
+  LLM_TIMEOUT: ${{ vars.LLM_TIMEOUT || '300' }}
+
+jobs:
+  translate:
+    if: ${{ github.actor != 'github-actions[bot]' }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5
+        with:
+          fetch-depth: 0
+
+      - name: Set up Python
+        uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
+        with:
+          python-version: "3.12"
+
+      - name: Translate to all languages
+        run: |
+          LANGS=$(python3 -c "import json; print(' '.join(l['code'] for l in json.load(open('.github/translate/languages.json'))))")
+          FAILED=""
+          for lang in $LANGS; do
+            echo "::group::Translating to ${lang}"
+            if python .github/scripts/translate_readme.py --lang "${lang}"; then
+              echo "✓ ${lang} succeeded"
+            else
+              echo "✗ ${lang} failed"
+              FAILED="${FAILED} ${lang}"
+            fi
+            echo "::endgroup::"
+          done
+          if [ -n "$FAILED" ]; then
+            echo "::warning::Failed languages:${FAILED}"
+          fi
+
+      - name: Commit translated READMEs if changed
+        run: |
+          TARGETS=$(python3 -c "import json; print(' '.join(l['target'] for l in json.load(open('.github/translate/languages.json'))))")
+          git add $TARGETS
+          if git diff --cached --quiet; then
+            echo "No translation changes detected."
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git commit -m "docs: auto-translate README files from README.md"
+          git push

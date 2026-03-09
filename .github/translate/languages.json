@@ -1,0 +1,16 @@
+[
+  {
+    "code": "zh-CN",
+    "name": "Simplified Chinese",
+    "label": "中文",
+    "target": "README.zh-CN.md",
+    "toc_pattern": "目录|Table of Contents"
+  },
+  {
+    "code": "ja",
+    "name": "Japanese",
+    "label": "日本語",
+    "target": "README.ja.md",
+    "toc_pattern": "目次|Table of Contents"
+  }
+]

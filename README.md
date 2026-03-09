@@ -9,9 +9,11 @@
   </a>
 </p>
 
+<!-- LANG_SWITCHER_START -->
 <p align="center">
-  <a href="README.md"><b>English</b></a> | <a href="README.zh-CN.md">中文</a> | <a href="README.ja.md">日本語</a>
+  <b>English</b> | <a href="README.zh-CN.md">中文</a> | <a href="README.ja.md">日本語</a>
 </p>
+<!-- LANG_SWITCHER_END -->
 
 <p align="center">
   <img src="media/GoMeshClaw.png" width="700" alt="Meshtastic LoRa hardware" />
