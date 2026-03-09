@@ -1,8 +1,8 @@
-# MeshClaw: OpenClaw Meshtastic 通道插件
+# MeshClaw: OpenClaw Meshtastic 频道插件
 
 <p align="center">
   <a href="https://www.npmjs.com/package/@seeed-studio/meshtastic">
-    <img alt="npm 版本" src="https://img.shields.io/npm/v/@seeed-studio/meshtastic.svg" />
+    <img alt="npm version" src="https://img.shields.io/npm/v/@seeed-studio/meshtastic.svg" />
   </a>
   <a href="https://www.npmjs.com/package/@seeed-studio/meshtastic">
     <img alt="license" src="https://img.shields.io/npm/l/@seeed-studio/meshtastic.svg" />
@@ -10,25 +10,25 @@
 </p>
 
 <p align="center">
-  <a href="README.md"><b>英文</b></a> | <a href="README.zh-CN.md">中文</a>
+  <a href="README.md"><b>English</b></a> | <a href="README.zh-CN.md">中文</a>
 </p>
 
 <p align="center">
   <img src="media/GoMeshClaw.png" width="700" alt="Meshtastic LoRa 硬件" />
 </p>
 
-MeshClaw 是一个 OpenClaw 通道插件，它通过串行（USB）、HTTP（WiFi）或 MQTT 将您的 AI 网关连接到 Meshtastic LoRa 网状网络。
+MeshClaw 是一个 OpenClaw 频道插件，通过 Serial (USB)、HTTP (WiFi) 或 MQTT 将你的 AI 网关连接到 Meshtastic LoRa 网络中。
 
 > [!IMPORTANT]
-> 此存储库是一个 **OpenClaw 通道插件**，不是一个独立的应用程序。
-> 您需要一个正在运行的 [OpenClaw](https://github.com/openclaw/openclaw) 网关（Node.js 22+）才能使用它。
+> 此仓库是 **OpenClaw 频道插件**，不是独立应用。
+> 使用前需要安装并运行 OpenClaw 网关（Node.js 22+）。
 
-[Meshtastic 文档][docs] · [报告错误][issues] · [请求功能][issues]
+[Meshtastic 文档][docs] · [报告 bug][issues] · [请求功能][issues]
 
 ## 目录
 
-- [先决条件](#prerequisites)
-- [快速入门](#quick-start)
+- [前提条件](#prerequisites)
+- [快速开始](#quick-start)
 - [工作原理](#how-it-works)
 - [关键特性](#key-features)
 - [传输模式](#transport-modes)
@@ -40,18 +40,18 @@ MeshClaw 是一个 OpenClaw 通道插件，它通过串行（USB）、HTTP（WiF
 - [限制](#limitations)
 - [开发](#development)
 - [贡献](#contributing)
-- [许可证](#license)
+- [许可](#license)
 
-## 先决条件
+## 前提条件
 
-- OpenClaw 网关已安装并运行
+- 已安装并运行 OpenClaw 网关
 - Node.js 22+
-- 一种 Meshtastic 连接方法：
+- 一种 Meshtastic 连接方式：
   - 通过 USB 的串行设备，或
-  - 本地网络上的启用 HTTP 的 Meshtastic 设备，或
+  - 本地网络上的 HTTP 启用 Meshtastic 设备，或
   - MQTT 代理访问（无需本地硬件）
 
-## 快速入门
+## 快速开始
 
 ```bash
 # 1) 从 npm 安装插件
@@ -60,7 +60,7 @@ openclaw plugins install @seeed-studio/meshtastic
 # 2) 运行引导设置
 openclaw onboard
 
-# 3) 验证通道状态
+# 3) 验证频道状态
 openclaw channels status --probe
 ```
 
@@ -72,30 +72,30 @@ openclaw channels status --probe
 
 ```mermaid
 flowchart LR
-    subgraph mesh ["LoRa 网状网络"]
+    subgraph mesh ["LoRa 网络"]
         N["Meshtastic 节点"]
     end
     subgraph gw ["OpenClaw 网关"]
         P["MeshClaw 插件"]
-        AI["AI 代理"]
+        AI["AI Agent"]
     end
-    N -- "串行 (USB)" --> P
+    N -- "Serial (USB)" --> P
     N -- "HTTP (WiFi)" --> P
     N -. "MQTT (代理)" .-> P
     P <--> AI
 ```
 
-入站消息在到达 AI 代理之前会通过 DM/组策略检查。
-出站回复会被转换为纯文本并分块以供无线电传输。
+入站消息在到达 AI 代理之前会通过 DM/群组策略检查。
+出站回复会被转换为纯文本并分块进行无线电传输。
 
 ## 关键特性
 
 - **三种传输方式**：串行、HTTP 和 MQTT
-- **DM 策略控制**：`pairing`、`open` 或 `allowlist`
-- **组策略控制**：`disabled`、`open` 或 `allowlist`
-- **提及门控**：仅在提及时在组中回复（可选）
+- **DM 策略控制**：`配对`、`开放`或`白名单`
+- **群组策略控制**：`禁用`、`开放`或`白名单`
+- **@mention 门控**：仅在群组中被提及时回复（可选）
 - **多账户支持**：运行多个独立的 Meshtastic 连接
-- **弹性传输处理**：不稳定链接的重新连接行为
+- **健壮的传输处理**：不稳定链接的重连行为
 
 ## 传输模式
 
@@ -107,8 +107,8 @@ flowchart LR
 
 注意：
 - `serial` 是默认传输方式。
-- `mqtt` 默认值：代理 `mqtt.meshtastic.org`，主题 `msh/US/2/json/#`。
-- 区域设置适用于串行/HTTP；MQTT 从主题中获取区域。
+- `mqtt` 默认：代理 `mqtt.meshtastic.org`，主题 `msh/US/2/json/#`。
+- 区域设置适用于 Serial/HTTP；MQTT 从主题中获取区域。
 
 ## 访问控制
 
@@ -116,25 +116,25 @@ flowchart LR
 
 | 值 | 行为 |
 |---|---|
-| `pairing`（默认） | 新用户在 DM 聊天前需要批准 |
-| `open` | 任何节点都可以 DM |
-| `allowlist` | 只有 `allowFrom` 中的 ID 可以 DM |
+| `pairing`（默认） | 新用户需要批准后才能进行 DM 聊天 |
+| `open` | 任何节点都可以进行 DM |
+| `allowlist` | 只有 `allowFrom` 中的 ID 可以进行 DM |
 
-### 组策略 (`groupPolicy`)
+### 群组策略 (`groupPolicy`)
 
 | 值 | 行为 |
 |---|---|
-| `disabled`（默认） | 忽略组通道 |
-| `open` | 在所有组通道中回复 |
-| `allowlist` | 仅在配置的通道中回复 |
+| `disabled`（默认） | 忽略群组频道 |
+| `open` | 在所有群组频道中回复 |
+| `allowlist` | 仅在配置的频道中回复 |
 
-您还可以为每个通道要求提及（`requireMention`），以便机器人仅在明确标记时回复。
+您还可以为每个频道要求提及（`requireMention`），这样机器人只有在被明确标记时才会回复。
 
 ## 配置
 
 使用 `openclaw onboard` 进行引导设置，或使用 `openclaw config edit` 手动编辑配置。
 
-### 串行（USB）
+### 串行 (USB)
 
 ```yaml
 channels:
@@ -144,7 +144,7 @@ channels:
     nodeName: OpenClaw
 ```
 
-### HTTP（WiFi）
+### HTTP (WiFi)
 
 ```yaml
 channels:
@@ -154,7 +154,7 @@ channels:
     nodeName: OpenClaw
 ```
 
-### MQTT（代理）
+### MQTT (代理)
 
 ```yaml
 channels:
@@ -200,12 +200,12 @@ channels:
 | `mqtt.topic` | `string` | `msh/US/2/json/#` | 订阅主题 |
 | `mqtt.publishTopic` | `string` | derived | 可选覆盖 |
 | `mqtt.tls` | `boolean` | `false` | MQTT TLS |
-| `region` | enum | `UNSET` | 串行/HTTP 仅 |
+| `region` | enum | `UNSET` | Serial/HTTP 仅 |
 | `nodeName` | `string` | auto-detect | MQTT 所需 |
 | `dmPolicy` | `open \| pairing \| allowlist` | `pairing` | DM 访问策略 |
-| `allowFrom` | `string[]` | - | DM 允许列表，例如 `!aabbccdd` |
-| `groupPolicy` | `open \| allowlist \| disabled` | `disabled` | 组通道策略 |
-| `channels` | `Record<string, object>` | - | 每通道覆盖 |
+| `allowFrom` | `string[]` | - | DM 白名单，例如 `!aabbccdd` |
+| `groupPolicy` | `open \| allowlist \| disabled` | `disabled` | 群组频道策略 |
+| `channels` | `Record<string, object>` | - | 每频道覆盖 |
 | `textChunkLimit` | `number` | `200` | 允许范围：`50-500` |
 
 </details>
@@ -247,25 +247,25 @@ https://github.com/user-attachments/assets/837062d9-a5bb-4e0a-b7cf-298e4bdf2f7c
 | Wio Tracker L1 Pro | 便携式现场网关 | [购买][hw-wio] |
 | SenseCAP Card Tracker T1000-E | 紧凑型追踪器 | [购买][hw-sensecap] |
 
-任何 Meshtastic 兼容的设备都可以使用。MQTT 模式可以在没有本地硬件的情况下运行。
+任何 Meshtastic 兼容的设备都适用。MQTT 模式可以在没有本地硬件的情况下运行。
 
 ## 故障排除
 
 | 症状 | 检查 |
 |---|---|
 | 串行无法连接 | `serialPort` 是否正确？主机是否有设备权限？ |
-| HTTP 无法连接 | `httpAddress` 是否可访问？`httpTls` 是否设置正确？ |
+| HTTP 无法连接 | `httpAddress` 是否可达？`httpTls` 是否设置正确？ |
 | MQTT 收不到消息 | 主题区域是否正确？代理凭据是否有效？ |
 | 没有 DM 回复 | 检查 `dmPolicy` 和 `allowFrom` |
-| 没有组回复 | 检查 `groupPolicy`、允许列表和提及要求 |
+| 没有群组回复 | 检查 `groupPolicy`、白名单和提及要求 |
 
-在提交问题时要包括传输模式、编辑后的配置和 `openclaw channels status --probe` 输出。
+提交 issue 时，请包括传输方式、配置（隐藏密钥）和 `openclaw channels status --probe` 输出。
 
 ## 限制
 
 - LoRa 消息带宽受限；回复会被分块（`textChunkLimit`，默认 `200`）。
-- 在发送到无线电设备之前，富 Markdown 会被移除。
-- 网状质量、范围和延迟取决于无线电环境和网络条件。
+- 发送到无线电设备的文本会被移除富文本格式。
+- 网络质量、范围和延迟取决于无线电环境和网络条件。
 
 ## 开发
 
@@ -277,19 +277,19 @@ openclaw plugins install -l ./openclaw-meshtastic
 openclaw channels status --probe
 ```
 
-不需要构建步骤。OpenClaw 直接从 `index.ts` 加载 TypeScript 源代码。
+无需构建步骤。OpenClaw 直接从 `index.ts` 加载 TypeScript 源代码。
 
 ## 贡献
 
-- 通过 [GitHub Issues][issues] 提交问题和功能请求
-- 欢迎拉取请求
-- 保持更改与现有的 TypeScript 约定一致
+- 通过 [GitHub Issues][issues] 提交 issue 和功能请求
+- 欢迎提交 Pull Request
+- 保持更改与现有的 TypeScript 习惯一致
 
-## 许可证
+## 许可
 
 MIT
 
-<!-- 参考样式链接 -->
+<!-- Reference-style links -->
 [docs]: https://meshtastic.org/docs/
 [issues]: https://github.com/Seeed-Solution/openclaw-meshtastic/issues
 [hw-xiao]: https://www.seeedstudio.com/Wio-SX1262-with-XIAO-ESP32S3-p-5982.html
