@@ -1,3 +1,7 @@
+<p align="center">
+  <img src="media/GoMeshClaw.png" width="700" alt="Meshtastic LoRa hardware" />
+</p>
+
 # MeshClaw: OpenClaw Meshtastic Channel Plugin
 
 <p align="center">
@@ -14,10 +18,6 @@
   <b>English</b> | <a href="README.zh-CN.md">中文</a> | <a href="README.ja.md">日本語</a> | <a href="README.fr.md">Français</a> | <a href="README.pt.md">Português</a> | <a href="README.es.md">Español</a>
 </p>
 <!-- LANG_SWITCHER_END -->
-
-<p align="center">
-  <img src="media/GoMeshClaw.png" width="700" alt="Meshtastic LoRa hardware" />
-</p>
 
 **MeshClaw** is an OpenClaw channel plugin that lets your AI gateway send and receive messages over Meshtastic — no internet, no cell towers, just radio waves. Talk to your AI assistant from the mountains, the ocean, or anywhere the grid doesn't reach.
 
