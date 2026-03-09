@@ -365,6 +365,13 @@ def main() -> int:
     languages = _load_languages()
     lang_map = {lang.code: lang for lang in languages}
 
+    # Sync English README.md lang switcher from languages.json
+    updated_source = _fix_lang_switcher(source_markdown, "README.md", languages)
+    if updated_source != source_markdown:
+        SOURCE.write_text(updated_source, encoding="utf-8")
+        source_markdown = updated_source
+        print("Updated language switcher in README.md.")
+
     if args.lang:
         lang = lang_map.get(args.lang)
         if lang is None:

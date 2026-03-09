@@ -100,6 +100,7 @@ jobs:
         if: steps.check.outputs.changed == 'true'
         run: |
           TARGETS=$(python3 -c "import json; print(' '.join(l['target'] for l in json.load(open('.github/translate/languages.json'))))")
+          git add README.md
           for f in $TARGETS; do
             [ -f "$f" ] && git add "$f"
           done
@@ -165,6 +166,7 @@ jobs:
       - name: Commit translated READMEs if changed
         run: |
           TARGETS=$(python3 -c "import json; print(' '.join(l['target'] for l in json.load(open('.github/translate/languages.json'))))")
+          git add README.md
           for f in $TARGETS; do
             [ -f "$f" ] && git add "$f"
           done
