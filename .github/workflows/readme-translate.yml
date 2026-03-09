@@ -60,7 +60,9 @@ jobs:
       - name: Commit translated READMEs if changed
         run: |
           TARGETS=$(python3 -c "import json; print(' '.join(l['target'] for l in json.load(open('.github/translate/languages.json'))))")
-          git add --ignore-missing $TARGETS 2>/dev/null || true
+          for f in $TARGETS; do
+            [ -f "$f" ] && git add "$f"
+          done
           if git diff --cached --quiet; then
             echo "No translation changes detected."
             exit 0
