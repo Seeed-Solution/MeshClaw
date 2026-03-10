@@ -80,6 +80,7 @@ jobs:
       - name: Translate to all languages
         if: steps.check.outputs.changed == 'true'
         run: python .github/scripts/translate_readme.py --all
+        continue-on-error: true
 
       - name: Commit and push translated READMEs
         if: steps.check.outputs.changed == 'true'
@@ -132,6 +133,7 @@ jobs:
 
       - name: Translate to all languages
         run: python .github/scripts/translate_readme.py --all
+        continue-on-error: true
 
       - name: Commit translated READMEs if changed
         run: |
