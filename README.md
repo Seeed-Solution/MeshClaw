@@ -1,8 +1,8 @@
 <p align="center">
   <img src="media/GoMeshClaw.png" width="700" alt="Meshtastic LoRa hardware" />
 </p>
-
-# MeshClaw: OpenClaw Meshtastic Channel Plugin
+<h1 align="center">MeshClaw</h1>
+<p align="center"><b>Bring AI to the Mesh — No Internet Required</b></p>
 
 <p align="center">
   <a href="https://www.npmjs.com/package/@seeed-studio/meshtastic">
@@ -11,41 +11,24 @@
   <a href="https://www.npmjs.com/package/@seeed-studio/meshtastic">
     <img alt="license" src="https://img.shields.io/npm/l/@seeed-studio/meshtastic.svg" />
   </a>
+  <a href="https://github.com/Seeed-Solution/MeshClaw/stargazers">
+    <img alt="GitHub stars" src="https://img.shields.io/github/stars/Seeed-Solution/MeshClaw?style=social" />
+  </a>
+  <a href="https://github.com/Seeed-Solution/MeshClaw/commits/main">
+    <img alt="last commit" src="https://img.shields.io/github/last-commit/Seeed-Solution/MeshClaw.svg" />
+  </a>
   <a href="https://github.com/openclaw/openclaw">
     <img alt="openclaw compat" src="https://img.shields.io/badge/OpenClaw-2026.3.x-blue" />
   </a>
 </p>
-
 <!-- LANG_SWITCHER_START -->
+
 <p align="center">
   <b>English</b> | <a href="README.zh-CN.md">中文</a> | <a href="README.ja.md">日本語</a> | <a href="README.fr.md">Français</a> | <a href="README.pt.md">Português</a> | <a href="README.es.md">Español</a>
 </p>
 <!-- LANG_SWITCHER_END -->
 
-**MeshClaw** is an OpenClaw channel plugin that lets your AI gateway send and receive messages over Meshtastic — no internet, no cell towers, just radio waves. Talk to your AI assistant from the mountains, the ocean, or anywhere the grid doesn't reach.
-
-⭐ Star us on GitHub — it motivates us a lot!
-
-> [!IMPORTANT]
-> This is a **channel plugin** for the [OpenClaw](https://github.com/openclaw/openclaw) AI gateway — not a standalone application. You need a running OpenClaw instance (Node.js 22+) to use it.
-
-[Documentation][docs] · [Hardware Guide](#recommended-hardware) · [Report Bug][issues] · [Request Feature][issues]
-
-## Table of Contents
-
-- [How It Works](#how-it-works)
-- [Recommended Hardware](#recommended-hardware)
-- [Features](#features)
-- [Capabilities & Roadmap](#capabilities--roadmap)
-- [Demo](#demo)
-- [Quick Start](#quick-start)
-- [Setup Wizard](#setup-wizard)
-- [Configuration](#configuration)
-- [Troubleshooting](#troubleshooting)
-- [Development](#development)
-- [Contributing](#contributing)
-
-## How It Works
+**MeshClaw** is an [OpenClaw](https://github.com/openclaw/openclaw) channel plugin that bridges AI agents with [Meshtastic](https://meshtastic.org/) LoRa mesh networks. Send and receive AI-powered messages over radio — from the mountains, the ocean, or anywhere the grid doesn't reach.
 
 ```mermaid
 flowchart LR
@@ -56,67 +39,44 @@ flowchart LR
         P["Meshtastic Plugin"]
         AI["AI Agent"]
     end
+    subgraph llm ["🧠 AI Backend"]
+        CLOUD["Cloud (OpenAI, Anthropic, …)"]
+        LOCAL["Local (Ollama, llama.cpp, …)"]
+    end
     N -- "Serial (USB)" --> P
     N -- "HTTP (WiFi)" --> P
     N -. "MQTT (Broker)" .-> P
     P <--> AI
+    AI -- "Cloud API" --> CLOUD
+    AI -. "Private" .-> LOCAL
 ```
 
-The plugin bridges Meshtastic LoRa devices and the OpenClaw AI agent. It supports three transport modes:
+[Documentation][docs] · [Hardware Guide](#recommended-hardware) · [Report Bug][issues] · [Request Feature][issues]
 
-- **Serial** — direct USB connection to a local Meshtastic device
-- **HTTP** — connects to a device over WiFi / local network
-- **MQTT** — subscribes to a Meshtastic MQTT broker, no local hardware needed
+## Table of Contents
 
-Inbound messages go through access control (DM policy, group policy, mention gating) before reaching the AI. Outbound replies are stripped of markdown formatting (LoRa devices can't render it) and chunked to fit radio packet size limits.
-
-## Recommended Hardware
-
-<p align="center">
-  <img src="media/XIAOclaw.png" width="760" alt="Meshtastic device with Seeed XIAO module" />
-</p>
-
-| Device                        | Best for                | Link               |
-| ----------------------------- | ----------------------- | ------------------ |
-| XIAO ESP32S3 + Wio-SX1262 kit | Entry-level development | [Buy][hw-xiao]     |
-| Wio Tracker L1 Pro            | Portable field gateway    | [Buy][hw-wio]      |
-| SenseCAP Card Tracker T1000-E | Compact tracker         | [Buy][hw-sensecap] |
-
-No hardware? MQTT transport connects via broker — no local device required.
-
-Any Meshtastic-compatible device works.
+- [Features](#features)
+- [Quick Start](#quick-start)
+- [Use Cases](#use-cases)
+- [Demo](#demo)
+- [Recommended Hardware](#recommended-hardware)
+- [Setup Wizard](#setup-wizard)
+- [Configuration](#configuration)
+- [Troubleshooting](#troubleshooting)
+- [Roadmap](#roadmap)
+- [Development](#development)
+- [Contributing](#contributing)
 
 ## Features
 
-- **AI Agent Integration** — Bridges OpenClaw AI agents with Meshtastic LoRa mesh networks. Enables intelligent communication without cloud dependency.
-
-- **Three Transport Modes** — Serial (USB), HTTP (WiFi), and MQTT support
-
+- **AI Agent Integration** — Bridges OpenClaw AI agents with Meshtastic LoRa mesh networks. Works with cloud AI out of the box; optionally go fully local (see [Hardware](#recommended-hardware)).
 - **DM & Group Channels with Access Control** — Supports both conversation modes with DM allowlists, channel response rules, and mention-gating
-
 - **Multi-Account Support** — Run multiple independent connections simultaneously
-
 - **Resilient Mesh Communication** — Auto-reconnect with configurable retries. Handles connection drops gracefully.
 
-## Capabilities & Roadmap
-
-The plugin treats Meshtastic as a first-class channel — just like Telegram or Discord — enabling AI conversations and skill invocation entirely over LoRa radio, without internet dependency.
-
-| Query Information Offline                                    | Cross-Channel Bridge: Send from off-grid, receive anywhere | 🔜 What's next:                                               |
-| ------------------------------------------------------------ | ---------------------------------------------------------- | ------------------------------------------------------------ |
-| <img src="media/image1.png" alt="Query Information Offline" /> | <img src="media/image2.png" alt="Cross-Channel Bridge" />  | We plan to ingest real-time node data (GPS location, environmental sensors, device status) into OpenClaw's context, enabling the AI to monitor mesh network health and broadcast proactive alerts without waiting for user queries. |
-
-## Demo
-
-<div align="center">
-
-https://github.com/user-attachments/assets/837062d9-a5bb-4e0a-b7cf-298e4bdf2f7c
-
-</div>
-
-Fallback: [media/demo.mp4](media/demo.mp4)
-
 ## Quick Start
+
+**Prerequisites:** A running [OpenClaw](https://github.com/openclaw/openclaw) instance (Node.js 22+).
 
 ```bash
 # 1. Install plugin
@@ -129,9 +89,58 @@ openclaw onboard
 openclaw channels status --probe
 ```
 
+Three commands. Your AI is now on the mesh.
+
 <p align="center">
   <img src="media/setup-screenshot.png" width="700" alt="OpenClaw setup wizard" />
 </p>
+
+## Use Cases
+
+- **Field Research** — Scientists and survey teams query AI knowledge bases from remote areas with zero cell coverage
+- **Disaster Response** — Emergency crews get AI-assisted decision support when infrastructure is down
+- **Maritime & Aviation** — Vessels and aircraft maintain AI interaction far from shore or ground stations
+- **Off-Grid Communities** — Rural and frontier settlements access AI tools through community mesh networks
+- **Privacy-First Operations** — Pair with a local LLM for air-gapped deployments where data sovereignty matters
+- **Cross-Channel Bridge** — Send a message from off-grid LoRa, receive the AI reply on Telegram, Discord, or any OpenClaw channel
+
+## Demo
+
+<div align="center">
+
+https://github.com/user-attachments/assets/837062d9-a5bb-4e0a-b7cf-298e4bdf2f7c
+
+</div>
+
+Fallback: [media/demo.mp4](media/demo.mp4)
+
+<p align="center">
+  <img src="media/image1.png" width="380" alt="Query Information Offline" />
+  &nbsp;&nbsp;
+  <img src="media/image2.png" width="380" alt="Cross-Channel Bridge" />
+</p>
+
+<p align="center">
+  <em>Left: querying AI knowledge offline over LoRa &nbsp;·&nbsp; Right: cross-channel bridge — send from mesh, receive on Telegram</em>
+</p>
+
+## Recommended Hardware
+
+<p align="center">
+  <img src="media/XIAOclaw.png" width="760" alt="Meshtastic device with Seeed XIAO module" />
+</p>
+
+| Device                        | Best for                         | Link               |
+| ----------------------------- | -------------------------------- | ------------------ |
+| XIAO ESP32S3 + Wio-SX1262 kit | Entry-level development          | [Buy][hw-xiao]     |
+| Wio Tracker L1 Pro            | Portable field gateway           | [Buy][hw-wio]      |
+| SenseCAP Card Tracker T1000-E | Compact tracker                  | [Buy][hw-sensecap] |
+
+> **Optional: fully offline AI stack** — Want zero cloud dependency? Add a [reComputer J series][hw-recomputer] running a local LLM (via Ollama, llama.cpp, etc.) and the entire pipeline — radio, gateway, and inference — stays on your own hardware. No API keys, no data leaves your network.
+
+No hardware? MQTT transport connects via broker — no local device required.
+
+Any Meshtastic-compatible device works.
 
 ## Setup Wizard
 
@@ -216,7 +225,7 @@ Assigns human-readable display names to your accounts. For example, an account w
 
 ## Configuration
 
-The guided setup (`openclaw onboard`) covers everything below. See [Setup Wizard](#setup-wizard) for a step-by-step walkthrough. For manual config, edit with `openclaw config edit`.
+The guided setup (`openclaw onboard`) covers everything below. For manual config, edit with `openclaw config edit`.
 
 ### Serial (USB)
 
@@ -320,6 +329,10 @@ These override the default account's config (YAML takes precedence for named acc
 
 Found a bug? [Open an issue][issues] with transport type, config (redact secrets), and `openclaw channels status --probe` output.
 
+## Roadmap
+
+We plan to ingest real-time node data (GPS location, environmental sensors, device status) into OpenClaw's context, enabling the AI to monitor mesh network health and broadcast proactive alerts — without waiting for user queries.
+
 ## Development
 
 ```bash
@@ -333,8 +346,17 @@ No build step — OpenClaw loads TypeScript source directly. Use `openclaw chann
 
 ## Contributing
 
-- [Open an issue][issues] for bugs or feature requests
-- Pull requests welcome — keep code aligned with existing TypeScript conventions
+We welcome contributions of all kinds!
+
+- **Bug reports & feature requests** — [Open an issue][issues]
+- **Code contributions** — Fork the repo, create a branch, and submit a PR. Keep code aligned with existing TypeScript conventions.
+- **Documentation & translations** — Improvements to docs and new language translations are always appreciated.
+
+See [Development](#development) for local setup instructions.
+
+---
+
+If you find MeshClaw useful, give us a star ⭐ — it helps others discover the project!
 
 <!-- Reference-style links -->
 [docs]: https://meshtastic.org/docs/
@@ -342,3 +364,4 @@ No build step — OpenClaw loads TypeScript source directly. Use `openclaw chann
 [hw-xiao]: https://www.seeedstudio.com/Wio-SX1262-with-XIAO-ESP32S3-p-5982.html
 [hw-wio]: https://www.seeedstudio.com/Wio-Tracker-L1-Pro-p-6454.html
 [hw-sensecap]: https://www.seeedstudio.com/SenseCAP-Card-Tracker-T1000-E-for-Meshtastic-p-5913.html
+[hw-recomputer]: https://www.seeedstudio.com/reComputer-J4012-p-5586.html
