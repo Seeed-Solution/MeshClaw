@@ -1,3 +1,10 @@
 media/
 node_modules/
 .git/
+.github/
+.claude/
+AGENTS.md
+PROMPT-README.md
+README.*.md
+*.lock
+pnpm-lock.yaml
