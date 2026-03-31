@@ -25,8 +25,8 @@ import {
   normalizeMeshtasticAllowEntry,
   normalizeMeshtasticNodeId,
 } from "./normalize.js";
-import { meshtasticOnboardingAdapter } from "./onboarding.js";
 import { resolveMeshtasticGroupMatch, resolveMeshtasticRequireMention } from "./policy.js";
+import { meshtasticSetupWizard } from "./setup-wizard.js";
 import { getMeshtasticRuntime } from "./runtime.js";
 import { sendMessageMeshtastic } from "./send.js";
 import type { CoreConfig, MeshtasticProbe } from "./types.js";
@@ -48,7 +48,7 @@ export const meshtasticPlugin: ChannelPlugin<ResolvedMeshtasticAccount, Meshtast
     ...meta,
     quickstartAllowFrom: true,
   },
-  onboarding: meshtasticOnboardingAdapter,
+  setupWizard: meshtasticSetupWizard,
   pairing: {
     idLabel: "meshtasticNode",
     normalizeAllowEntry: (entry) => normalizeMeshtasticAllowEntry(entry),
