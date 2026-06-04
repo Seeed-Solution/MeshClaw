@@ -10,7 +10,6 @@ import type { CoreConfig } from "./types.js";
 type SendMeshtasticOptions = {
   accountId?: string;
   channelIndex?: number;
-  channelName?: string;
 };
 
 export type SendMeshtasticResult = {
