@@ -17,6 +17,7 @@ import {
   resolveMeshtasticAccount,
   type ResolvedMeshtasticAccount,
 } from "./accounts.js";
+import { chunkText } from "./chunk.js";
 import { MeshtasticConfigSchema } from "./config-schema.js";
 import { monitorMeshtasticProvider } from "./monitor.js";
 import {
@@ -264,7 +265,7 @@ export const meshtasticPlugin: ChannelPlugin<ResolvedMeshtasticAccount, Meshtast
   },
   outbound: {
     deliveryMode: "direct",
-    chunker: (text, limit) => getMeshtasticRuntime().channel.text.chunkText(text, limit),
+    chunker: (text, limit) => chunkText(text, limit),
     chunkerMode: "text",
     textChunkLimit: 200,
     sendText: async ({ to, text, accountId }) => {
