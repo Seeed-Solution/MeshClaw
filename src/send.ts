@@ -10,7 +10,6 @@ import type { CoreConfig } from "./types.js";
 type SendMeshtasticOptions = {
   accountId?: string;
   channelIndex?: number;
-  channelName?: string;
 };
 
 export type SendMeshtasticResult = {
@@ -23,7 +22,7 @@ let activeSerialSend:
   | ((text: string, destination?: number, channelIndex?: number) => Promise<number>)
   | null = null;
 let activeMqttSend:
-  | ((text: string, destination?: string, channelName?: string) => Promise<void>)
+  | ((text: string, destination?: string, channelIndex?: number) => Promise<void>)
   | null = null;
 
 export function setActiveSerialSend(
@@ -33,7 +32,7 @@ export function setActiveSerialSend(
 }
 
 export function setActiveMqttSend(
-  fn: ((text: string, destination?: string, channelName?: string) => Promise<void>) | null,
+  fn: ((text: string, destination?: string, channelIndex?: number) => Promise<void>) | null,
 ) {
   activeMqttSend = fn;
 }
@@ -79,7 +78,7 @@ export async function sendMessageMeshtastic(
 
   if (transport === "mqtt") {
     if (activeMqttSend) {
-      await activeMqttSend(stripped, target, opts.channelName);
+      await activeMqttSend(stripped, target, opts.channelIndex);
     } else {
       throw new Error("No active MQTT connection. Run 'openclaw gateway start' to connect.");
     }

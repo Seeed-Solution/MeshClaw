@@ -1,15 +1,17 @@
 import mqtt from "mqtt";
-import { nodeNumToHex } from "./normalize.js";
+import { hexToNodeNum, looksLikeMeshtasticNodeId, nodeNumToHex } from "./normalize.js";
 import type { MeshtasticMqttConfig } from "./types.js";
 
-/** Derive a publish topic from a subscribe topic.
- *  Standard pattern: "msh/REGION/NUM/json/#" → "msh/REGION/NUM/json/mqtt".
- *  If the topic has no wildcard suffix, appends "/mqtt" as the publish leaf. */
+/** Derive the JSON downlink topic from a subscribe topic.
+ *  Standard pattern: "msh/REGION/NUM/json/#" → "msh/REGION/NUM/json/mqtt/".
+ *  Meshtastic firmware accepts JSON downlinks on the ".../2/json/mqtt/" topic;
+ *  a channel named "mqtt" (with downlink enabled) must exist on the gateway.
+ *  See https://meshtastic.org/docs/software/integrations/mqtt/ */
 function derivePublishTopic(subscribeTopic: string): string {
   if (subscribeTopic.endsWith("/#")) {
-    return subscribeTopic.slice(0, -2) + "/mqtt";
+    return subscribeTopic.slice(0, -2) + "/mqtt/";
   }
-  return subscribeTopic + "/mqtt";
+  return subscribeTopic + "/mqtt/";
 }
 
 export type MeshtasticMqttTextEvent = {
@@ -32,13 +34,15 @@ export type MeshtasticMqttClientOptions = {
 };
 
 export type MeshtasticMqttClient = {
-  sendText: (text: string, destination?: string, channelName?: string) => Promise<void>;
+  sendText: (text: string, destination?: string, channelIndex?: number) => Promise<void>;
   close: () => void;
 };
 
 /**
- * Meshtastic MQTT JSON message format.
- * Messages on the JSON topic contain: sender, from, type, payload, channel.
+ * Meshtastic MQTT JSON *uplink* message (received from the broker).
+ * Text packets arrive as { type: "text", payload: { text }, from, to, channel,
+ * sender }, where `from` is the originating node and `sender` is the gateway
+ * node that published the packet to MQTT.
  */
 type MqttJsonMessage = {
   sender?: string;
@@ -48,6 +52,19 @@ type MqttJsonMessage = {
   payload?: { text?: string };
   channel?: number;
   channel_name?: string;
+};
+
+/**
+ * Meshtastic MQTT JSON *downlink* message (published to ".../2/json/mqtt/").
+ * `payload` is a plain string and `from` is the numeric node ID of the gateway
+ * that will transmit the message. `channel` (index) and `to` are optional.
+ */
+type MqttJsonDownlink = {
+  from: number;
+  type: "sendtext";
+  payload: string;
+  channel?: number;
+  to?: number;
 };
 
 /** Connect to a Meshtastic mesh via MQTT broker. */
@@ -109,16 +126,18 @@ export async function connectMeshtasticMqtt(
       return;
     }
 
-    // Only handle text messages.
-    if (msg.type !== "sendtext" || !msg.payload?.text) {
+    // Only handle text messages. Received text packets use type "text"
+    // ("sendtext" is the downlink verb and never appears on uplink).
+    if (msg.type !== "text" || !msg.payload?.text) {
       return;
     }
 
-    // Skip own messages.
-    const senderNodeId = msg.sender
-      ? msg.sender.toLowerCase()
-      : msg.from
-        ? nodeNumToHex(msg.from)
+    // Identify the originating node. `from` is the actual author; `sender` is
+    // only the gateway that uploaded the packet to MQTT, so prefer `from`.
+    const senderNodeId = msg.from !== undefined
+      ? nodeNumToHex(msg.from)
+      : msg.sender
+        ? msg.sender.toLowerCase()
         : undefined;
     if (!senderNodeId) {
       return;
@@ -134,13 +153,10 @@ export async function connectMeshtasticMqtt(
       && msg.to !== 0xffffffff
       && nodeNumToHex(msg.to).toLowerCase() === myNodeId;
 
-    const senderName = msg.sender && msg.sender !== senderNodeId
-      ? msg.sender
-      : undefined;
-
+    // The JSON envelope carries no display name (`sender` is the gateway node
+    // ID, not a name), so leave senderName unset and let the node ID stand in.
     const event: MeshtasticMqttTextEvent = {
       senderNodeId: senderNodeId.startsWith("!") ? senderNodeId : `!${senderNodeId}`,
-      senderName,
       text: msg.payload.text,
       channelIndex: msg.channel ?? 0,
       channelName: msg.channel_name,
@@ -166,18 +182,24 @@ export async function connectMeshtasticMqtt(
   }
 
   return {
-    sendText: async (text, destination, channelName) => {
-      const outboundTopic = channelName
-        ? publishTopic.replace(/\/[^/]*$/, `/${channelName}`)
-        : publishTopic;
-      const message: MqttJsonMessage = {
-        sender: myNodeId ?? options.myNodeId,
+    sendText: async (text, destination, channelIndex) => {
+      // Standard Meshtastic JSON downlink: publish to ".../2/json/mqtt/" with
+      // { from, type: "sendtext", payload: <string>, channel?, to? }. `payload`
+      // is a plain string (not an object) and `from` is the numeric node ID of
+      // the gateway that transmits. The gateway needs a channel named "mqtt"
+      // with downlink enabled and JSON output on.
+      // https://meshtastic.org/docs/software/integrations/mqtt/
+      const fromNum = myNodeId ? hexToNodeNum(myNodeId) : 0;
+      const message: MqttJsonDownlink = {
+        from: fromNum,
         type: "sendtext",
-        payload: { text },
-        ...(destination ? { to: Number.parseInt(destination.replace("!", ""), 16) } : {}),
-        ...(channelName ? { channel_name: channelName } : {}),
+        payload: text,
+        ...(channelIndex !== undefined ? { channel: channelIndex } : {}),
+        ...(destination && looksLikeMeshtasticNodeId(destination)
+          ? { to: hexToNodeNum(destination) }
+          : {}),
       };
-      client.publish(outboundTopic, JSON.stringify(message));
+      client.publish(publishTopic, JSON.stringify(message));
     },
     close: () => {
       client.end(true);

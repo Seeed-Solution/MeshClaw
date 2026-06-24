@@ -289,8 +289,11 @@ async function monitorMqtt(params: {
           if (!mqttClient) {
             return;
           }
-          const channelName = message.isGroup ? message.channelName : undefined;
-          await mqttClient.sendText(text, message.isGroup ? undefined : target, channelName);
+          await mqttClient.sendText(
+            text,
+            message.isGroup ? undefined : target,
+            message.isGroup ? message.channelIndex : undefined,
+          );
           opts.statusSink?.({ lastOutboundAt: Date.now() });
           core.channel.activity.record({
             channel: "meshtastic",
@@ -304,8 +307,8 @@ async function monitorMqtt(params: {
   });
 
   // Register active send function for `openclaw message send`.
-  setActiveMqttSend((text, destination, channelName) =>
-    mqttClient ? mqttClient.sendText(text, destination, channelName) : Promise.resolve(),
+  setActiveMqttSend((text, destination, channelIndex) =>
+    mqttClient ? mqttClient.sendText(text, destination, channelIndex) : Promise.resolve(),
   );
 
   logger.info(

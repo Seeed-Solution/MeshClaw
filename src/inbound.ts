@@ -61,7 +61,6 @@ async function deliverMeshtasticReply(params: {
   target: string;
   accountId: string;
   channelIndex?: number;
-  channelName?: string;
   chunkLimit?: number;
   sendReply?: (target: string, text: string) => Promise<void>;
   statusSink?: (patch: { lastOutboundAt?: number }) => void;
@@ -83,7 +82,6 @@ async function deliverMeshtasticReply(params: {
       await sendMessageMeshtastic(params.target, chunk, {
         accountId: params.accountId,
         channelIndex: params.channelIndex,
-        channelName: params.channelName,
       });
     }
     // Small delay between chunks to avoid overwhelming the radio queue.
@@ -362,7 +360,6 @@ export async function handleMeshtasticInbound(params: {
       target: peerId,
       accountId: account.accountId,
       channelIndex: message.isGroup ? message.channelIndex : undefined,
-      channelName: message.isGroup ? message.channelName : undefined,
       chunkLimit: account.config.textChunkLimit,
       sendReply: params.sendReply,
       statusSink,
