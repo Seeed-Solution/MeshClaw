@@ -14,6 +14,7 @@ import {
 } from "openclaw/plugin-sdk/irc";
 import { createReplyPrefixOptions } from "openclaw/plugin-sdk/matrix";
 import type { ResolvedMeshtasticAccount } from "./accounts.js";
+import { chunkText, MESHTASTIC_CHUNK_LIMIT } from "./chunk.js";
 import {
   normalizeMeshtasticAllowlist,
   normalizeMeshtasticNodeId,
@@ -47,10 +48,6 @@ function resolveMeshtasticEffectiveAllowlists(params: {
   return { effectiveAllowFrom, effectiveGroupAllowFrom };
 }
 
-// LoRa payload limit is ~230 bytes.  Split longer replies into chunks
-// so the firmware doesn't silently truncate them.
-const MESHTASTIC_CHUNK_LIMIT = 200;
-
 /** Channel-level system prompt hint for LoRa-constrained responses. */
 const LORA_SYSTEM_HINT =
   "You are responding over a LoRa mesh radio (Meshtastic). " +
@@ -58,24 +55,6 @@ const LORA_SYSTEM_HINT =
   "Keep responses extremely concise — plain text only, no markdown, no emoji, no bullet lists. " +
   "Use short sentences. Omit filler words. Prioritize the most important information first.";
 
-
-function chunkText(text: string, limit: number): string[] {
-  if (text.length <= limit) return [text];
-  const chunks: string[] = [];
-  let remaining = text;
-  while (remaining.length > 0) {
-    if (remaining.length <= limit) {
-      chunks.push(remaining);
-      break;
-    }
-    // Try to break at a space near the limit.
-    let breakAt = remaining.lastIndexOf(" ", limit);
-    if (breakAt <= limit * 0.4) breakAt = limit; // no good break point
-    chunks.push(remaining.slice(0, breakAt).trimEnd());
-    remaining = remaining.slice(breakAt).trimStart();
-  }
-  return chunks;
-}
 
 async function deliverMeshtasticReply(params: {
   payload: OutboundReplyPayload;
